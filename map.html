@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>2D Google Map</title>
+    <style>
+        html, body, #map {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRaP02wOxnwvtLZZz07dWJsCABXQBd2BY&callback=initMap"></script>
+<script>
+    function initMap(callback) {
+
+        const geocoder = new google.maps.Geocoder();
+
+        const places = [
+            ["19585 Lakewood Drive, Bloomington, IL, USA", "home"],
+            ["28 E Green St, Champaign, IL, USA", "lease"]
+        ]
+
+        let map = null;
+
+        geocoder.geocode({address: places[0][0]}, function(results, status) {
+            if(status === "OK") {
+                const location = results[0].geometry.location;
+
+                map = new google.maps.Map(document.getElementById("map"), {
+                        center: location,
+                        zoom: 16,
+                        mapTypeId: "hybrid",
+                        tilt: 45,
+                });
+            }
+        });
+
+        places.forEach(function (place) {
+            geocoder.geocode({address: place[0]}, function (results, status) {
+                if (status === "OK") {
+                    const location = results[0].geometry.location;
+
+                    const marker = new google.maps.Marker({
+                        position: location,
+                        map: map,
+                        title: "Place",
+                    });
+
+                    const info = new google.maps.InfoWindow({
+                        content:
+                            '<div>' +
+                            `<p>${place[1]}</p>` +
+                            '</div>'
+                    })
+
+                    google.maps.event.addListener(marker, "click", function () {
+                        info.open(map, marker);
+                    })
+                }
+            });
+        });
+    }
+</script>
+</body>
+</html>
