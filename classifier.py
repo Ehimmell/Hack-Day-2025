@@ -22,12 +22,22 @@ def getRecording(wavFile):
     return frequencies, magnitude
 
 def classify(file1, file2):
+
     freq1, mag1 = getRecording(file1)
     freq2, mag2 = getRecording(file2)
-    xi = np.abs(mag2 - mag1)
-    max = np.argmax(xi)
-    xi = xi / xi[max]
-    f = func(xi)
-    if (f < 0.75):
+
+    segments = np.floor(min(len(mag1), len(mag2)) / len(beta))
+    fSum = 0
+    for i in range(int(segments)):
+        m1 = mag1[i * len(beta) : (i + 1) * len(beta)]
+        m2 = mag2[i * len(beta) : (i + 1) * len(beta)]
+        xi = np.abs(m2 - m1)
+        maxArg = np.argmax(xi)
+        xi = xi / xi[maxArg]
+        f = func(xi)
+        fSum += f
+    fSum /= segments
+    
+    if (fSum < 0.75):
         return "Different"
     return "Same"
