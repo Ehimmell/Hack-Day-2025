@@ -15,6 +15,7 @@ import ReviewQueueCard from "./components/ReviewQueueCard";
 import ModelHealthCard from "./components/ModelHealthCard";
 
 import "./styles/Dashboard.css";
+import APIInput from "./components/APIInput";
 
 
 const Dashboard = () => {
@@ -61,6 +62,7 @@ const Dashboard = () => {
       <HeatMapCard />
       <ReviewQueueCard />
       <ModelHealthCard />
+        <APIInput />
     </Container>
   );
 };
