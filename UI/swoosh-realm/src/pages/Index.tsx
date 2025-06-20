@@ -43,7 +43,7 @@ const Index = () => {
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-foreground">
-                    SecureCall Analytics
+                    SF SecureCall
                   </h1>
                   <p className="text-sm text-muted-foreground">
                     AI Call Detection & Fraud Prevention Dashboard
