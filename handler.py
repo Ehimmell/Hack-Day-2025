@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from tempfile import NamedTemporaryFile
 import os
+from classifier import classify
 
 # import the classify_file helper from the test_rawnet module
 from test_rawnet import classify_file
@@ -34,6 +35,15 @@ class VoiceAuthAPI:
                 return jsonify({"error": str(e)}), 500
             os.unlink(tmp_path)
             return jsonify({"label": label})
+
+        @self.app.route("/classify", methods=["POST"])
+        def classify_route():
+            if "audio1" not in request.files:
+                return jsonify({"error": "No audio1 field"}), 400
+            if "audio2" not in request.files:
+                return jsonify({"error": "No audio2 field"}), 400
+            result = classify(request.files["audio1"], request.files["audio2"])
+            return jsonify(result)
 
     def run(self, host: str = "0.0.0.0", port: int = 5000):
         self.app.run(host=host, port=port, debug=False)
