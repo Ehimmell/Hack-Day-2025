@@ -59,10 +59,11 @@ const Dashboard = () => {
       </div>
 
       <CallLogTable />
+
+        <APIInput />
       <HeatMapCard />
       <ReviewQueueCard />
       <ModelHealthCard />
-        <APIInput />
     </Container>
   );
 };
