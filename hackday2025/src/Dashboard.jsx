@@ -16,6 +16,7 @@ import ModelHealthCard from "./components/ModelHealthCard";
 
 import "./styles/Dashboard.css";
 import APIInput from "./components/APIInput";
+import WavCompareCard from "./components/WavCompareCard";
 
 
 const Dashboard = () => {
@@ -59,7 +60,7 @@ const Dashboard = () => {
       </div>
 
       <CallLogTable />
-
+        <WavCompareCard />
         <APIInput />
       <HeatMapCard />
       <ReviewQueueCard />
