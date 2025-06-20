@@ -38,6 +38,7 @@ class VoiceAuthAPI:
 
         @self.app.route("/classify", methods=["POST"])
         def classify_route():
+            print(request.files)
             if "audio1" not in request.files:
                 return jsonify({"error": "No audio1 field"}), 400
             if "audio2" not in request.files:
