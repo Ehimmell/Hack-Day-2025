@@ -12,33 +12,43 @@ import {
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import CompareIcon from "@mui/icons-material/CompareArrows";
 
-/* Change if your Flask server runs elsewhere */
-const API_URL = "http://localhost:5000/classify";
+const API_URL = "http://localhost:5000/classify"; // Flask endpoint
 
-const WavCompareCard = () => {
+export default function WavCompareCard() {
   const [file1, setFile1] = useState(null);
   const [file2, setFile2] = useState(null);
-  const [status, setStatus] = useState("idle"); // idle · uploading · done · error
-  const [result, setResult] = useState(null);   // whatever JSON returns
+  const [status, setStatus] = useState("idle"); // idle | uploading | done | error
+  const [result, setResult] = useState(null);
 
-  /* choose file handlers */
-  const choose1 = e => { setFile1(e.target.files[0] ?? null); setResult(null); };
-  const choose2 = e => { setFile2(e.target.files[0] ?? null); setResult(null); };
+  const onSelect1 = (e) => {
+    setFile1(e.target.files[0] ?? null);
+    setResult(null);
+  };
+  const onSelect2 = (e) => {
+    setFile2(e.target.files[0] ?? null);
+    setResult(null);
+  };
 
-  /* upload */
   const submit = async () => {
     if (!file1 || !file2) return;
     setStatus("uploading");
 
-    const form = new FormData();
-    form.append("audio1", file1);
-    form.append("audio2", file2);
+    const fd = new FormData();
+    fd.append("audio1", file1);
+    fd.append("audio2", file2);
 
     try {
-      const r   = await fetch(API_URL, { method: "POST", body: form });
-      const jsn = await r.json();
-      if (!r.ok) throw new Error(jsn.error ?? r.statusText);
-      setResult(jsn);          // e.g. { "sameSpeaker": true, ... }
+      const resp = await fetch(API_URL, {
+        method: "POST",
+        body: fd,
+        headers: {
+          /** extra header requested */
+          enctype: "multipart/form-data",
+        },
+      });
+      const jsn = await resp.json();
+      if (!resp.ok) throw new Error(jsn.error ?? resp.statusText);
+      setResult(jsn); // whatever structure the server returns
       setStatus("done");
     } catch (err) {
       console.error(err);
@@ -46,26 +56,26 @@ const WavCompareCard = () => {
     }
   };
 
-  const isUploading = status === "uploading";
+  const uploading = status === "uploading";
 
   return (
     <Card sx={{ p: 2 }}>
       <CardContent>
+        {/* header row */}
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
             <Typography variant="subtitle2" color="text.secondary">
               Voice Comparison
             </Typography>
             <Typography variant="h5" sx={{ fontWeight: 600 }}>
-              {result ? JSON.stringify(result) : "Upload two WAVs"}
+              {result ? JSON.stringify(result) : "Choose two WAV files"}
             </Typography>
             {status === "error" && (
               <Typography variant="body2" color="error.main">
-                Server error – see console
+                Upload failed – check console
               </Typography>
             )}
           </Box>
-
           <Avatar
             variant="rounded"
             sx={{ width: 56, height: 56, bgcolor: "primary.light" }}
@@ -74,54 +84,47 @@ const WavCompareCard = () => {
           </Avatar>
         </Box>
 
-        {/* buttons */}
+        {/* action buttons */}
         <Box sx={{ mt: 3, display: "flex", gap: 1, flexWrap: "wrap" }}>
           <Button
             component="label"
             variant="outlined"
             startIcon={<UploadFileIcon />}
-            disabled={isUploading}
+            disabled={uploading}
           >
             Choose WAV 1
-            <input hidden type="file" accept=".wav,audio/wav" onChange={choose1} />
+            <input hidden type="file" accept=".wav,audio/wav" onChange={onSelect1} />
           </Button>
 
           <Button
             component="label"
             variant="outlined"
             startIcon={<UploadFileIcon />}
-            disabled={isUploading}
+            disabled={uploading}
           >
             Choose WAV 2
-            <input hidden type="file" accept=".wav,audio/wav" onChange={choose2} />
+            <input hidden type="file" accept=".wav,audio/wav" onChange={onSelect2} />
           </Button>
 
           <Button
             variant="contained"
             onClick={submit}
-            disabled={!file1 || !file2 || isUploading}
+            disabled={!file1 || !file2 || uploading}
           >
-            {isUploading ? "Sending…" : "Compare"}
+            {uploading ? "Sending…" : "Compare"}
           </Button>
         </Box>
 
         {/* filenames */}
         {(file1 || file2) && (
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            component="div"
-            sx={{ mt: 1 }}
-          >
+          <Typography variant="caption" sx={{ mt: 1, display: "block" }}>
             {file1 && <>File 1: {file1.name}<br /></>}
             {file2 && <>File 2: {file2.name}</>}
           </Typography>
         )}
 
-        {isUploading && <LinearProgress sx={{ mt: 2 }} />}
+        {uploading && <LinearProgress sx={{ mt: 2 }} />}
       </CardContent>
     </Card>
   );
 }
-
-export default WavCompareCard;
