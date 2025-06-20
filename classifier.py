@@ -24,6 +24,7 @@ def getRecording(wavFile):
 
 
 def classify(file1, file2):
+
     freq1, mag1 = getRecording(file1)
     freq2, mag2 = getRecording(file2)
 
