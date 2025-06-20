@@ -37,8 +37,6 @@ def main(input_dir, output_dir=None):
     for fname in os.listdir(input_dir):
         if not fname.lower().endswith('.wav'):
             continue
-        if fname.lower().endswith('_part1.wav') or fname.lower().endswith('_part2.wav'):
-            continue
         split_file(os.path.join(input_dir, fname), output_dir)
 
 if __name__ == '__main__':
